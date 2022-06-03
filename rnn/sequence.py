@@ -34,9 +34,9 @@ from d2l import torch as d2l
 # sin function and noise data are used to generate sequence data
 T = 1000
 # to generate a vector from 1 to T
-time = torch.arange(1, T+1, dtype=torch.float32)
+time = torch.arange(1, T + 1, dtype=torch.float32)
 # to use sin function with normal noise data to generate a vector X
-x = torch.sin(0.01*time + torch.normal(0, 0.2, (T, )))
+x = torch.sin(0.01 * time + torch.normal(0, 0.2, (T,)))
 d2l.plot(time, x, 'time', 'x', xlim=[1, 1000], figsize=(6, 3))
 d2l.use_svg_display()
 d2l.plt.show()
@@ -56,3 +56,19 @@ labels = x[tau:].reshape((-1, 1))
 batch_size, n_train = 16, 600
 # features[:n_train], labels[:n_train]: 600 rows
 train_iter = d2l.load_array((features[:n_train], labels[:n_train]), batch_size, is_train=True)
+
+
+# MLP
+def init_weights(m):
+    if type(m) == nn.Linear:
+        nn.init.xavier_uniform_(m.weight)
+
+
+def get_net():
+    # input layer: 4 units, hidden layer: 10 units, output: 1 (scalar)
+    net = nn.Sequential(nn.Linear(4, 10), nn.ReLU(), nn.Linear(10, 1))
+    net.apply(init_weights)
+    return net
+
+
+loss = nn.MSELoss()
