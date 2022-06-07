@@ -59,13 +59,18 @@ class Vocab:
         if reserved_tokens is None:
             reserved_tokens = []
         # 按出现频率排序
+        # 例如Counter({'the': 2261, 'i': 1267, 'and': 1245, 'of': 1155, ...})
         counter = count_corpus(tokens)
         self._token_freqs = sorted(counter.items(), key=lambda x: x[1],
                                    reverse=True)
+        # indx_to_token: 是一个List包含每一个token
+        # token_to_idx: 是一个Dict包含每一个token的token:freq对：如{'<unk>': 0, 'the': 1, 'i': 2, 'and': 3
         # 未知词元的索引为0
+        # 构造未知次元的token list和token:idx字典
         self.idx_to_token = ['<unk>'] + reserved_tokens
         self.token_to_idx = {token: idx
                              for idx, token in enumerate(self.idx_to_token)}
+        # 构造文本内容的token list和token:idx字典
         for token, freq in self._token_freqs:
             if freq < min_freq:
                 break
@@ -77,6 +82,11 @@ class Vocab:
         return len(self.idx_to_token)
 
     def __getitem__(self, tokens):
+        """
+        遍历token list的每个token, 作为token_to_idx字典的key,得到相应的value: index
+        :param tokens: tokens(类型是list or tuple) or one token(类型是str)
+        :return: token的索引值: int
+        """
         if not isinstance(tokens, (list, tuple)):
             return self.token_to_idx.get(tokens, self.unk)
         return [self.__getitem__(token) for token in tokens]
