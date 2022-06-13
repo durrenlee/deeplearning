@@ -69,7 +69,6 @@ def rnn(inputs, state, params):
         Y = torch.mm(H, W_hq) + b_q
         # Y: 2*28输出结果矩阵
         outputs.append(Y)
-        print(len(outputs))
         # outputs: 长度为5的2*28矩阵列表
         # cat：将长度为5的2*28矩阵列表按照纵轴方向叠加成10*28的矩阵
         # 同时输出包含2*512 只有一个隐状态的矩阵的tuple
@@ -85,7 +84,10 @@ class RNNModelScratch:
         self.init_state, self.forward_fn = init_state, forward_fn
 
     def __call__(self, X, state):
+        # 5*2*28独热编码
         X = F.one_hot(X.T, self.vocab_size).type(torch.float32)
+        # 调用rnn进行前向网络计算，返回10*28的输出结果矩阵
+        # 同时返回包含2*512 只有一个隐状态的矩阵的tuple
         return self.forward_fn(X, state, self.params)
 
     def begin_state(self, batch_size, device):
@@ -105,4 +107,3 @@ print(Y.shape)
 print(len(new_state))
 # 隐状态形状保持不变，即（批量大小，隐藏单元数）:torch.Size([2, 512])
 print(new_state[0].shape)
-
